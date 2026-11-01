@@ -3,7 +3,7 @@
 Painel para disparar e-mails de marketing, avisos e notícias em massa. Cada usuário cadastra os próprios contatos, monta os próprios templates de e-mail e acompanha o resultado de cada envio. O super admin enxerga e gerencia tudo.
 
 - **Stack:** Laravel 13, PHP 8.3+, Filament 5 (Livewire 4), filas no banco de dados.
-- **Painel:** `/admin` (não há site público; a rota `/` é só a página padrão do Laravel).
+- **Painel:** `/admin` (não há site público; a rota `/` redireciona para `/admin/login`, e quem já está logado cai direto no painel).
 
 ---
 
