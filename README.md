@@ -155,7 +155,22 @@ Entre em http://localhost:8000/admin com o e-mail e a senha de `APP_ADMIN_*`.
 - O super admin vê o campo **Usuário** e escolhe de quem é o contato. Para o usuário comum, o contato é sempre dele.
 - Filtros: usuário (super admin), telefone, empresa e data de criação.
 
-### 4. Criar um template
+### 4. Importar contatos por planilha (.xlsx)
+
+Em **Cadastros → Contatos**, clique em **Importar planilha**.
+
+1. (Opcional) Clique em **Baixar modelo** para obter uma planilha de exemplo.
+2. Preencha a primeira linha com os títulos das colunas: `nome`, `email`, `telefone`, `empresa`, `observacoes`. Só **nome** e **email** são obrigatórios; as colunas podem estar em qualquer ordem e os títulos aceitam variações (`e-mail`, `celular`, `whatsapp`, `obs`...), com ou sem acento.
+3. Envie o arquivo `.xlsx` (até 5 MB e 5.000 linhas). O super admin escolhe também o usuário dono dos contatos; para o usuário comum, os contatos são sempre dele.
+
+Regras da importação:
+
+- Se o e-mail já existe para aquele usuário, o contato é **atualizado** (só os campos preenchidos na planilha; campos vazios não apagam o que já existe). Contatos excluídos com o mesmo e-mail são restaurados.
+- Linhas sem nome, com e-mail inválido ou vazias são **ignoradas**; o aviso final mostra quantos foram criados, atualizados e ignorados e os primeiros erros (com o número da linha).
+- Só a primeira aba da planilha é lida. A importação é feita na hora, sem fila.
+- O código fica em `app/Services/Contact/ImportContactsService.php`; a ação está em `ListContacts`.
+
+### 5. Criar um template
 
 **Cadastros → Templates → Criar.** Veja a seção [Templates](#templates-blocos-e-variáveis) para os detalhes.
 
@@ -164,11 +179,11 @@ Entre em http://localhost:8000/admin com o e-mail e a senha de `APP_ADMIN_*`.
 3. Em **Conteúdo do e-mail**, clique em **Adicionar bloco** e monte o e-mail. Arraste pela alça (⠿) ou use as setas para mudar a posição.
 4. Confira o resultado no painel **Pré-visualização**, que mostra o e-mail como será enviado, usando "Maria Exemplo" como contato de teste.
 
-### 5. Visualizar um template salvo
+### 6. Visualizar um template salvo
 
 Na lista de Templates, o botão **Visualizar e-mail** abre o e-mail renderizado em um modal. A prévia usa o primeiro contato do dono do template ou, se não houver, "Maria Exemplo".
 
-### 6. Disparar
+### 7. Disparar
 
 Na lista de Templates, clique em **Disparar**:
 
@@ -177,7 +192,7 @@ Na lista de Templates, clique em **Disparar**:
 
 O painel avisa quantos e-mails foram para a fila. Com o worker rodando (`php artisan queue:work`), eles saem em segundos.
 
-### 7. Acompanhar os logs
+### 8. Acompanhar os logs
 
 **Disparos → Logs** lista cada e-mail com data, destinatário, assunto, status (**Enviado** ou **Falhou**) e o erro, quando houver. Filtros: status, template, usuário (super admin) e data. O usuário comum só vê os próprios logs.
 
@@ -230,6 +245,7 @@ app/
 │       └── <Nome>/                       Resource + Pages/ + Schemas/ + Tables/
 ├── Jobs/SendTemplateMailJob.php          Envia um e-mail e grava o log
 ├── Mail/TemplateMail.php                 Converte os blocos e renderiza o e-mail
+├── Services/Contact/ImportContactsService.php   Importa contatos de .xlsx
 ├── Models/
 │   ├── BaseModel.php                     HasFactory + SoftDeletes
 │   ├── Concerns/BelongsToUser.php        Escopo global por usuário
@@ -281,6 +297,7 @@ php artisan test
 Os testes rodam em SQLite em memória (`phpunit.xml`), então **não** tocam no banco do `.env`. A suíte cobre:
 
 - **Models** (`tests/Unit/Models`): criar, ler, atualizar, excluir e relações de `Contact`, `Template`, `MailLog` e `User`.
+- **Importação** (`tests/Feature/ImportContactsTest.php`): criar, atualizar, ignorar linhas inválidas, restaurar excluídos e atribuição de usuário.
 - **Fluxo de e-mail** (`tests/Feature/MassMailTest.php`): isolamento por usuário, envio com log de sucesso e de falha, e acesso ao painel.
 - **Painel** (`tests/Feature/ViewPagesTest.php`): páginas dos resources, prévia do e-mail, estilos dos blocos, atribuição de usuário em contatos e filtros das tabelas.
 
