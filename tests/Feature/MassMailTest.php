@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Enums\MailStatus;
-use App\Enums\TemplateType;
 use App\Jobs\SendTemplateMailJob;
 use App\Models\Contact;
 use App\Models\MailLog;
@@ -44,7 +43,7 @@ class MassMailTest extends TestCase
         $contact = $this->contactFor($user, 'a@x.com');
         $template = Template::withoutGlobalScopes()->create([
             'user_id' => $user->id, 'name' => 'T', 'subject' => 'Oi {{nome}}',
-            'type' => TemplateType::Html, 'html' => '<p>Olá {{nome}}</p>',
+            'color' => '#2563eb', 'blocks' => [['type' => 'title', 'data' => ['text' => 'Oi {{nome}}']], ['type' => 'text', 'data' => ['content' => '<p>Olá {{nome}}</p>']], ['type' => 'button', 'data' => ['label' => 'Ver', 'url' => 'https://example.com']], ['type' => 'divider', 'data' => []]],
         ]);
 
         (new SendTemplateMailJob($template->id, $contact->id))->handle();
@@ -61,7 +60,7 @@ class MassMailTest extends TestCase
         $contact = $this->contactFor($user, 'a@x.com');
         $template = Template::withoutGlobalScopes()->create([
             'user_id' => $user->id, 'name' => 'T', 'subject' => 'S',
-            'type' => TemplateType::Html, 'html' => '<p>x</p>',
+            'color' => '#2563eb', 'blocks' => [],
         ]);
 
         (new SendTemplateMailJob($template->id, $contact->id))->handle();

@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Models;
 
-use App\Enums\TemplateType;
 use App\Models\Template;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,8 +18,10 @@ class TemplateTest extends TestCase
             'user_id' => User::factory()->create()->id,
             'name' => 'Promoção',
             'subject' => 'Oi {{nome}}',
-            'type' => TemplateType::Html,
-            'html' => '<p>Olá {{nome}}</p>',
+            'color' => '#2563eb',
+            'background_color' => '#f4f4f5',
+            'font' => 'arial',
+            'blocks' => [['type' => 'title', 'data' => ['text' => 'Olá']]],
         ], $attributes));
     }
 
@@ -31,7 +32,7 @@ class TemplateTest extends TestCase
         $this->assertDatabaseHas('templates', [
             'id' => $template->id,
             'name' => 'Promoção',
-            'type' => 'html',
+            'color' => '#2563eb',
         ]);
     }
 
@@ -64,11 +65,12 @@ class TemplateTest extends TestCase
         $this->assertNull(Template::find($template->id));
     }
 
-    public function test_type_is_cast_to_enum(): void
+    public function test_blocks_are_cast_to_array(): void
     {
-        $template = $this->template(['type' => TemplateType::Image, 'image_path' => 'templates/a.png', 'html' => null]);
+        $template = $this->template()->fresh();
 
-        $this->assertSame(TemplateType::Image, $template->fresh()->type);
+        $this->assertSame('title', $template->blocks[0]['type']);
+        $this->assertSame('Olá', $template->blocks[0]['data']['text']);
     }
 
     public function test_has_user_relationship(): void

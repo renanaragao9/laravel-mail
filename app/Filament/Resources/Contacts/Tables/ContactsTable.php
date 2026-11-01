@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\Contacts\Tables;
 
+use App\Filament\Filters\Common\CreatedAtFilter;
+use App\Filament\Filters\Common\UserFilter;
+use App\Filament\Filters\Contact\CompanyFilter;
+use App\Filament\Filters\Contact\PhoneFilter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -48,6 +52,12 @@ class ContactsTable
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                UserFilter::make(),
+                PhoneFilter::make(),
+                CompanyFilter::make(),
+                CreatedAtFilter::make(),
             ])
             ->defaultSort('name', 'asc')
             ->recordActions([

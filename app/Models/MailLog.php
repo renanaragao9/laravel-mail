@@ -11,11 +11,26 @@ class MailLog extends Model
 {
     use BelongsToUser;
 
-    protected $fillable = ['user_id', 'contact_id', 'template_id', 'email', 'subject', 'status', 'error', 'sent_at'];
+    protected $fillable = [
+        'user_id',
+        'contact_id',
+        'template_id',
+        'email',
+        'subject',
+        'status',
+        'error',
+        'sent_at',
+    ];
 
     protected function casts(): array
     {
-        return ['status' => MailStatus::class, 'sent_at' => 'datetime'];
+        return [
+            'user_id' => 'integer',
+            'contact_id' => 'integer',
+            'template_id' => 'integer',
+            'status' => MailStatus::class,
+            'sent_at' => 'datetime',
+        ];
     }
 
     public function contact(): BelongsTo

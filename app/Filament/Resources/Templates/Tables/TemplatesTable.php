@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\Templates\Tables;
 
+use App\Filament\Filters\Common\CreatedAtFilter;
+use App\Filament\Filters\Common\UserFilter;
 use App\Jobs\SendTemplateMailJob;
+use App\Mail\TemplateMail;
 use App\Models\Contact;
 use App\Models\Template;
 use Filament\Actions\Action;
@@ -34,11 +37,6 @@ class TemplatesTable
                     ->label('Assunto')
                     ->searchable(),
 
-                TextColumn::make('type')
-                    ->label('Tipo')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => $state->label()),
-
                 TextColumn::make('user.name')
                     ->label('Usuário')
                     ->visible(fn () => (bool) auth()->user()?->is_master),
@@ -54,8 +52,27 @@ class TemplatesTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->filters([
+                UserFilter::make(),
+                CreatedAtFilter::make(),
+            ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([
+                Action::make('preview')
+                    ->label('Visualizar e-mail')
+                    ->icon(Heroicon::OutlinedComputerDesktop)
+                    ->modalHeading(fn (Template $record) => $record->name)
+                    ->modalWidth('4xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Fechar')
+                    ->modalContent(fn (Template $record) => view('filament.template-preview', [
+                        'html' => (new TemplateMail($record, Contact::query()->where('user_id', $record->user_id)->first() ?? new Contact([
+                            'name' => 'Maria Exemplo',
+                            'email' => 'maria@exemplo.com',
+                            'phone' => '85999990000',
+                        ]), preview: true))->render(),
+                    ])),
+
                 Action::make('send')
                     ->label('Disparar')
                     ->icon(Heroicon::OutlinedPaperAirplane)

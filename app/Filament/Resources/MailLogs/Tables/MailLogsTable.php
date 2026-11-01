@@ -3,8 +3,11 @@
 namespace App\Filament\Resources\MailLogs\Tables;
 
 use App\Enums\MailStatus;
+use App\Filament\Filters\Common\CreatedAtFilter;
+use App\Filament\Filters\Common\UserFilter;
+use App\Filament\Filters\MailLog\StatusFilter;
+use App\Filament\Filters\MailLog\TemplateFilter;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class MailLogsTable
@@ -43,9 +46,10 @@ class MailLogsTable
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
-                SelectFilter::make('status')
-                    ->label('Status')
-                    ->options(collect(MailStatus::cases())->mapWithKeys(fn (MailStatus $s) => [$s->value => $s->label()])),
+                StatusFilter::make(),
+                TemplateFilter::make(),
+                UserFilter::make(),
+                CreatedAtFilter::make(),
             ]);
     }
 }

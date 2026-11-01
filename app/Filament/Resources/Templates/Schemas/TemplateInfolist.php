@@ -24,10 +24,8 @@ class TemplateInfolist
                         TextEntry::make('subject')
                             ->label('Assunto'),
 
-                        TextEntry::make('type')
-                            ->label('Tipo')
-                            ->badge()
-                            ->formatStateUsing(fn ($state) => $state->label()),
+                        TextEntry::make('color')
+                            ->label('Cor principal'),
 
                         TextEntry::make('created_at')
                             ->label('Criado em')

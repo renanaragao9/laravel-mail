@@ -13,9 +13,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('subject');
-            $table->string('type');
-            $table->string('image_path')->nullable();
-            $table->text('html')->nullable();
+            $table->string('color', 7)->default('#2563eb');
+            $table->string('background_color', 7)->default('#f4f4f5');
+            $table->string('font', 20)->default('arial');
+            $table->json('blocks')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

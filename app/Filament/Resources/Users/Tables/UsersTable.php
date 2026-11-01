@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Filters\Common\CreatedAtFilter;
+use App\Filament\Filters\User\EmailVerifiedFilter;
+use App\Filament\Filters\User\ProfileFilter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -44,6 +47,11 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('name', 'asc')
+            ->filters([
+                ProfileFilter::make(),
+                EmailVerifiedFilter::make(),
+                CreatedAtFilter::make(),
+            ])
             ->recordActions([
                 ViewAction::make()
                     ->icon(Heroicon::OutlinedEye),
